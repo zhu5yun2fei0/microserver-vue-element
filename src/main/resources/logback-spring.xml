@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<springProperty scope="context" name="app_name" source="spring.application.name" />
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+	<jmxConfigurator />
+	<!-- TRACE、DEBUG、INFO、WARN、ERROR -->
+
+	<property name="log.pattern" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) %-5level [%thread] %logger{50} - %msg%n" />
+	<property name="log.lever" value="info" />
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${log.pattern}</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="kafkaAppender" class="com.pktech.osmc.util.kafka.KafkaAppender">
+		<encoder class="com.pktech.osmc.util.kafka.encoder.KafkaEncoder">
+			<layout class="com.pktech.osmc.util.kafka.layout.PatternLayout">
+				<pattern>${log.pattern}</pattern>
+			</layout>
+		</encoder>
+		<bootstrap_severs>10.128.190.15:9092,10.128.190.16:9092,10.128.190.33:9092</bootstrap_severs>
+		<topic>osmc-microserver-vue-element</topic>
+	</appender>
+
+	<root level="${log.lever}">
+		<appender-ref ref="kafkaAppender" />
+		<appender-ref ref="STDOUT" />
+	</root>
+
+</configuration>
